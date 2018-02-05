@@ -1,0 +1,25 @@
+{
+  "name": "svg-to-json-webpack-plugin",
+  "version": "1.0.0",
+  "description": "Generates SVG spritemap in JSON format from all SGVs in a directory",
+  "main": "svg-to-json.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "svg",
+    "json",
+    "webpack",
+    "plugin"
+  ],
+  "author": "Andrew Giles",
+  "license": "MIT",
+  "dependencies": {
+    "glob": "^7.0.5",
+    "html4-id": "^1.0.0",
+    "loader-utils": "^1.0.4",
+    "webpack-merge": "^4.1.0",
+    "webpack-sources": "^0.2.0",
+    "xmldom": "^0.1.22"
+  }
+}
