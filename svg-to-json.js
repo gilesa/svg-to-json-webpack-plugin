@@ -89,7 +89,7 @@ SvgToJsonPlugin.prototype.apply = function(compiler) {
                 // Add the original contents of the SVG file to the content string
                 var content = ''
 
-                for( var i = 0 i < svg.childNodes.length i++ ) {
+                for( var i = 0; i < svg.childNodes.length; i++ ) {
                     var node = svg.childNodes[i]
 
                     // Skip title tags
