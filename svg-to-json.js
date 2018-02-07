@@ -3,9 +3,7 @@ var fs = require('fs'),
     glob = require('glob'),
     idify = require('html4-id'),
     merge = require('webpack-merge'),
-    xmldom = require('xmldom'),
-    loaderUtils = require('loader-utils'),
-    RawSource = require('webpack-sources').RawSource
+    xmldom = require('xmldom')
 
 
 function SvgToJsonPlugin(options) {
@@ -14,48 +12,20 @@ function SvgToJsonPlugin(options) {
         glob: {},
         prefix: 'sprite-',
         filename: 'spritemap.json',
-        chunk: 'spritemap',
-        deleteChunk: true
+        outputPath: '/'
     }, options)
 }
 
 SvgToJsonPlugin.prototype.apply = function(compiler) {
     var options = this.options
-    var files = glob.sync(options.src)
-
+    
     compiler.plugin('this-compilation', function(compilation) {
-
-        compilation.plugin('optimize-chunks', function optmizeChunks(chunks) {
-            if ( files.length ) {
-                // Add new chunk for spritemap
-                compilation.addChunk(options.chunk)
-            }
-        })
-
-        compilation.plugin('additional-chunk-assets', function additionalChunkAssets(chunks) {
-            var svg = generateSVG()
-            if ( !svg ) {
-                return
-            }
-
-            var source = new RawSource(svg)
-            var sourceChunk = compilation.namedChunks[options.chunk]
-            var filename = options.filename
-                .replace(/\[hash]/ig, compilation.getStats().hash)
-                .replace(/\[contenthash]/ig, function() {
-                    return loaderUtils.getHashDigest(source.source(), 'sha1', 'hex', 16)
-                })
-
-            // Add actual (unoptimized) SVG to spritemap chunk
-            compilation.additionalChunkAssets.push(filename)
-            compilation.assets[filename] = source
-            sourceChunk.files.push(filename)
-        })
+        var files = glob.sync(options.src)
 
         var generateSVG = function() {
             // No point in generating when there are no files
             if ( !files.length ) {
-                return false
+                return ''
             }
 
             // Initialize DOM/XML classes
@@ -108,29 +78,13 @@ SvgToJsonPlugin.prototype.apply = function(compiler) {
                 }
             })
 
-            // No point in optimizing/saving when there are no SVGs
-            if ( Object.keys(spritemap).length === 0 ) {
-                return false
-            }
-
             // Return JSON string of spritemap
             return JSON.stringify(spritemap)
         }
-    })
 
-    compiler.plugin('emit', function(compilation, callback) {
-        compilation.chunks.forEach(function(chunk) {
-            if ( chunk.name !== options.chunk ) {
-                return
-            }
-
-            // Remove entry (.js file) from compilation assets since it's empty anyway
-            if (options.deleteChunk) {
-                delete compilation.assets[chunk.files[0]]
-            }
-        })
-
-        callback()
+        // Write SVG JSON file to filesystem
+        var svg = generateSVG()
+        fs.writeFileSync(path.resolve(options.outputPath, options.filename), svg)
     })
 }
 
