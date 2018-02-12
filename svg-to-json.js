@@ -67,14 +67,14 @@ SvgToJsonPlugin.prototype.apply = function(compiler) {
                         continue
                     }
 
-                    content += XMLSerializer.serializeToString(node).replace( /xmlns=".+"/, '')
+                    content += XMLSerializer.serializeToString(node).replace( /xmlns=".+"/, '').trim()
                 }
 
                 // Add svg viewbox and content to spritemap object under id
                 spritemap[ validId ] = {
                     title: id,
                     viewbox: viewbox.join(' '),
-                    content: content.replace(/[\r\n\t]/g, '')
+                    content: content.replace(/[\r\n\t]/g, '').replace(/>  +</g, '><')
                 }
             })
 
