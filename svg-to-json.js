@@ -18,8 +18,8 @@ function SvgToJsonPlugin(options) {
 
 SvgToJsonPlugin.prototype.apply = function(compiler) {
     var options = this.options
-    
-    compiler.plugin('this-compilation', function(compilation) {
+
+    compiler.hooks.thisCompilation.tap(SvgToJsonPlugin.name, function(compilation) {
         var files = glob.sync(options.src)
 
         var generateSVG = function() {
@@ -32,10 +32,10 @@ SvgToJsonPlugin.prototype.apply = function(compiler) {
             var DOMParser = new xmldom.DOMParser(),
                 XMLSerializer = new xmldom.XMLSerializer(),
                 XMLDoc = new xmldom.DOMImplementation().createDocument(null, null, null) // `document` alternative for NodeJS environments
-            
-            // Create object to store data 
+
+            // Create object to store data
             var spritemap = {}
-            
+
             // Add data for each file
             files.forEach(function(file) {
                 var id = options.prefix + path.basename(file, path.extname(file)),
